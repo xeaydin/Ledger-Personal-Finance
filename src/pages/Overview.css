@@ -1,0 +1,337 @@
+.overview-liquidity-warning {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--text-primary);
+}
+
+.overview-warning-icon {
+  flex-shrink: 0;
+  color: var(--accent-warning);
+  margin-top: 2px;
+}
+
+.overview-warning-text {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.overview-today-net-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.today-net-card {
+  flex: 1;
+  min-width: 260px;
+  padding: 1rem 1.25rem;
+}
+
+.today-net-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.today-net-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.today-net-detail {
+  margin: 0;
+}
+
+.today-net-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+.today-net-arrow {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.today-net-sub {
+  width: 100%;
+  margin-top: 0.15rem;
+}
+
+.today-net-toggle {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.schedule-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.schedule-add-btn {
+  flex-shrink: 0;
+}
+
+.schedule-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.schedule-add-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.schedule-add-form label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.schedule-add-form .input-field {
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.schedule-add-form .input-field:focus {
+  border-color: var(--accent-primary);
+}
+
+.schedule-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.schedule-item-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.schedule-far-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.schedule-near-icon {
+  color: var(--accent-warning);
+  flex-shrink: 0;
+}
+
+.schedule-item-far-expense.pending {
+  border-left-color: #64748b;
+  background: rgba(100, 116, 139, 0.06);
+}
+
+.schedule-item-near-expense.pending {
+  border-left-color: var(--accent-warning);
+}
+
+.schedule-far-badge {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.metrics-banner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.metric-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.metric-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.bg-indigo { background: rgba(99, 102, 241, 0.2); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3); }
+
+.metric-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-details .amount {
+  font-size: 1.5rem;
+}
+
+.overview-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.chart-card {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-placeholder {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.chart-line {
+  flex: 1;
+  width: 100%;
+}
+
+.chart-line svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
+}
+
+.chart-axes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.schedule-item {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.schedule-item.pending {
+  border-left: 3px solid var(--accent-warning);
+}
+
+.schedule-item.approved {
+  opacity: 0.7;
+  border-left: 3px solid var(--accent-success);
+}
+
+.item-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.date-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  min-width: 50px;
+}
+
+.date-badge .day { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+.date-badge .month { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-tertiary); }
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.status-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--accent-warning);
+  font-weight: 500;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.approve-btn {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.approve-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gap-1 { gap: 0.25rem; }
