@@ -2,10 +2,10 @@
   display: flex;
   gap: 1rem;
   align-items: flex-start;
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(245, 158, 11, 0.45);
-  background: rgba(245, 158, 11, 0.1);
+  padding: 1.1rem 1.35rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(245, 158, 11, 0.06) 100%);
   color: var(--text-primary);
 }
 
@@ -148,6 +148,11 @@
   flex-shrink: 0;
 }
 
+.schedule-cc-icon {
+  color: #c4b5fd;
+  flex-shrink: 0;
+}
+
 .schedule-item-far-expense.pending {
   border-left-color: #64748b;
   background: rgba(100, 116, 139, 0.06);
@@ -162,45 +167,141 @@
   margin-top: 0.15rem;
 }
 
-.metrics-banner {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+.overview-page-header {
+  padding-bottom: 0.25rem;
 }
 
-.metric-panel {
+.overview-hero-desc {
+  max-width: 44rem;
+}
+
+.overview-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Executive KPI row — fintech dashboard pattern */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+@media (max-width: 960px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-card {
+  position: relative;
   display: flex;
   flex-direction: row;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.5rem;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.35rem 1.35rem;
+  overflow: hidden;
 }
 
-.metric-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: var(--radius-md);
+.kpi-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  opacity: 0.95;
+}
+
+.kpi-card--liquidity .kpi-card-accent {
+  background: linear-gradient(90deg, #fbbf24, rgba(251, 191, 36, 0.2));
+}
+
+.kpi-card--pending .kpi-card-accent {
+  background: linear-gradient(90deg, #fb7185, rgba(251, 113, 133, 0.25));
+}
+
+.kpi-card--networth .kpi-card-accent {
+  background: linear-gradient(90deg, #a78bfa, rgba(167, 139, 250, 0.2));
+}
+
+.kpi-icon-wrap {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  border: 1px solid var(--border-subtle);
 }
 
-.bg-indigo { background: rgba(99, 102, 241, 0.2); color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.3); }
+.kpi-icon-wrap--gold {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--accent-gold);
+  border-color: rgba(251, 191, 36, 0.22);
+}
 
-.metric-details {
+.kpi-icon-wrap--rose {
+  background: rgba(251, 113, 133, 0.1);
+  color: #fb7185;
+  border-color: rgba(251, 113, 133, 0.25);
+}
+
+.kpi-icon-wrap--violet {
+  background: rgba(167, 139, 250, 0.12);
+  color: var(--accent-primary);
+  border-color: rgba(167, 139, 250, 0.28);
+}
+
+.kpi-card-body {
   display: flex;
   flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
 }
 
-.metric-details .amount {
-  font-size: 1.5rem;
+.kpi-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.kpi-value--outflow {
+  color: #fda4af;
+}
+
+.kpi-meta {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
 }
 
 .overview-content {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .overview-content {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chart-card {
@@ -235,7 +336,7 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.35));
 }
 
 .chart-axes {

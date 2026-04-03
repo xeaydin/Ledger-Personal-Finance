@@ -9,7 +9,10 @@ export default function Sidebar() {
         <div className="logo-icon">
           <Wallet className="icon-main" size={24} />
         </div>
-        <h1 className="logo-text">Ledger</h1>
+        <div className="sidebar-brand">
+          <h1 className="logo-text">Ledger</h1>
+          <p className="sidebar-tagline">Personal finance</p>
+        </div>
       </div>
 
       <nav className="sidebar-nav">

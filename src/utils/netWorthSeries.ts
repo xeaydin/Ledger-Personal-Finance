@@ -48,7 +48,7 @@ function addMonths(base: Date, deltaMonths: number): Date {
 /**
  * Dated cashflows only (no double-count with recurring monthly spread):
  * - Every income row (fixed + variable) on its `date`
- * - Every day spending on its `date`
+ * - Day spendings paid **cash** on their `date` (card spend hits liquid when the statement is approved)
  */
 export function buildLiquidityDeltaByDate(
   incomes: IncomeEntry[],
@@ -59,7 +59,9 @@ export function buildLiquidityDeltaByDate(
     m[i.date] = (m[i.date] ?? 0) + i.amount;
   }
   for (const s of dailySpends) {
-    m[s.date] = (m[s.date] ?? 0) - s.amount;
+    if (s.paymentMethod !== 'Credit card') {
+      m[s.date] = (m[s.date] ?? 0) - s.amount;
+    }
   }
   return m;
 }

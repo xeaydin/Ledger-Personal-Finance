@@ -2,9 +2,53 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
-import { Plus, Receipt, CalendarClock, CreditCard, Save, X, Trash2 } from 'lucide-react';
+import { Plus, Receipt, CalendarClock, CreditCard, Save, X, Trash2, Banknote } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
+import type { PaymentMethod } from '../context/AppDataContext';
+import { applyCreditCardScheduleDelta } from '../utils/creditCardSchedule';
 import './Expenses.css';
+
+const CATEGORY_CHIP_VARIANTS = 6;
+
+const FIXED_COST_THEMES = [
+  { color: 'bg-blue', label: 'Ocean', hint: 'Blue accent' },
+  { color: 'bg-purple', label: 'Lilac', hint: 'Purple accent' },
+  { color: 'bg-red', label: 'Coral', hint: 'Red accent' },
+  { color: 'bg-green', label: 'Moss', hint: 'Green accent' },
+] as const;
+
+function PaymentMethodField({
+  value,
+  onChange,
+  groupLabelId,
+}: {
+  value: PaymentMethod;
+  onChange: (v: PaymentMethod) => void;
+  groupLabelId: string;
+}) {
+  return (
+    <div className="payment-method-row" role="group" aria-labelledby={groupLabelId}>
+      <button
+        type="button"
+        className={`payment-method-btn ${value === 'Cash' ? 'is-selected' : ''}`}
+        onClick={() => onChange('Cash')}
+        aria-pressed={value === 'Cash'}
+      >
+        <Banknote size={17} strokeWidth={2} aria-hidden />
+        Cash
+      </button>
+      <button
+        type="button"
+        className={`payment-method-btn ${value === 'Credit card' ? 'is-selected' : ''}`}
+        onClick={() => onChange('Credit card')}
+        aria-pressed={value === 'Credit card'}
+      >
+        <CreditCard size={17} strokeWidth={2} aria-hidden />
+        Credit card
+      </button>
+    </div>
+  );
+}
 
 export default function Expenses() {
   const {
@@ -16,6 +60,7 @@ export default function Expenses() {
     setFixedCosts,
     expenseCategories,
     setLiquidCash,
+    setScheduledPayments,
   } = useAppData();
 
   const defaultCategory = expenseCategories[0] ?? 'Other';
@@ -29,9 +74,16 @@ export default function Expenses() {
     amount: '',
     category: defaultCategory,
     date: new Date().toISOString().split('T')[0],
+    paymentMethod: 'Cash' as PaymentMethod,
   });
   const [newInstallment, setNewInstallment] = useState({ title: '', total: '', months_total: '' });
-  const [newFixed, setNewFixed] = useState({ title: '', amount: '', icon: '🏠', color: 'bg-blue' });
+  const [newFixed, setNewFixed] = useState({
+    title: '',
+    amount: '',
+    icon: '🏠',
+    color: 'bg-blue',
+    paymentMethod: 'Cash' as PaymentMethod,
+  });
 
   useEffect(() => {
     setNewDaily(prev => ({
@@ -49,14 +101,20 @@ export default function Expenses() {
       amount: parseFloat(newDaily.amount),
       category: newDaily.category,
       date: newDaily.date,
+      paymentMethod: newDaily.paymentMethod,
     };
-    setLiquidCash(prev => prev - entry.amount);
+    if (entry.paymentMethod === 'Cash') {
+      setLiquidCash(prev => prev - entry.amount);
+    } else {
+      setScheduledPayments(prev => applyCreditCardScheduleDelta(prev, entry.amount, entry.date));
+    }
     setDailySpends(prev => [entry, ...prev]);
     setNewDaily({
       title: '',
       amount: '',
       category: defaultCategory,
       date: new Date().toISOString().split('T')[0],
+      paymentMethod: 'Cash',
     });
     setShowDailyForm(false);
   };
@@ -89,9 +147,10 @@ export default function Expenses() {
       amount: parseFloat(newFixed.amount),
       icon: newFixed.icon,
       color: newFixed.color,
+      paymentMethod: newFixed.paymentMethod,
     };
     setFixedCosts(prev => [...prev, entry]);
-    setNewFixed({ title: '', amount: '', icon: '🏠', color: 'bg-blue' });
+    setNewFixed({ title: '', amount: '', icon: '🏠', color: 'bg-blue', paymentMethod: 'Cash' });
     setShowFixedForm(false);
   };
 
@@ -99,7 +158,8 @@ export default function Expenses() {
     <div className="page-layout">
       <header className="page-header">
         <div>
-          <h1 className="text-gradient">Expense Tracker</h1>
+          <p className="page-eyebrow">Cash out</p>
+          <h1 className="page-title-display">Expense Tracker</h1>
           <p className="text-secondary mt-1">Monitor daily spending, installments, and fixed monthly costs.</p>
         </div>
       </header>
@@ -108,7 +168,7 @@ export default function Expenses() {
         <section className="expense-section">
           <div className="section-header">
             <h2 className="section-title">
-              <Receipt size={20} className="text-primary" />
+              <Receipt size={20} className="text-accent" />
               Day spendings
             </h2>
             <Button
@@ -163,20 +223,46 @@ export default function Expenses() {
                       Net-worth chart moves on this date only; past sample points stay stable for other days.
                     </p>
                   </div>
-                  <div className="form-group">
-                    <label>Category</label>
-                    <select
-                      value={newDaily.category}
-                      onChange={e => setNewDaily({ ...newDaily, category: e.target.value })}
-                      className="input-field"
+                  <div className="form-group form-group-full-width">
+                    <span className="input-label" id="daily-category-label">
+                      Category
+                    </span>
+                    <div
+                      className="category-chip-grid"
+                      role="listbox"
+                      aria-labelledby="daily-category-label"
                     >
-                      {expenseCategories.map(cat => (
-                        <option key={cat} value={cat}>
+                      {expenseCategories.map((cat, i) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          role="option"
+                          aria-selected={newDaily.category === cat}
+                          className={`category-chip category-chip--${i % CATEGORY_CHIP_VARIANTS} ${
+                            newDaily.category === cat ? 'is-selected' : ''
+                          }`}
+                          onClick={() => setNewDaily({ ...newDaily, category: cat })}
+                        >
                           {cat}
-                        </option>
+                        </button>
                       ))}
-                    </select>
-                    <p className="text-tertiary text-xs mt-1">Manage categories in Settings.</p>
+                    </div>
+                    <p className="text-tertiary text-xs mt-1">Add or remove categories in Settings.</p>
+                  </div>
+                  <div className="form-group form-group-full-width">
+                    <span className="input-label" id="daily-payment-label">
+                      Payment method
+                    </span>
+                    <PaymentMethodField
+                      value={newDaily.paymentMethod}
+                      onChange={paymentMethod => setNewDaily({ ...newDaily, paymentMethod })}
+                      groupLabelId="daily-payment-label"
+                    />
+                    <p className="text-tertiary text-xs payment-behavior-hint">
+                      Cash is taken from liquid cash immediately. Credit card spend is added to a single
+                      &quot;Credit card statement&quot; due on the <strong>1st of next month</strong> (Overview →
+                      Scheduled); approving it pays the balance from liquid cash.
+                    </p>
                   </div>
                   <div className="form-actions">
                     <Button variant="primary" type="submit" aria-label="Save day spending">
@@ -197,6 +283,7 @@ export default function Expenses() {
                     <TableHead>Item</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Category</TableHead>
+                    <TableHead>Payment</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead className="text-right" style={{ width: '52px' }} />
                   </TableRow>
@@ -209,6 +296,18 @@ export default function Expenses() {
                       <TableCell>
                         <span className="badge badge-category">{spend.category}</span>
                       </TableCell>
+                      <TableCell>
+                        <span
+                          className={`payment-badge payment-badge--${spend.paymentMethod === 'Credit card' ? 'card' : 'cash'}`}
+                        >
+                          {spend.paymentMethod === 'Credit card' ? (
+                            <CreditCard size={13} strokeWidth={2} aria-hidden />
+                          ) : (
+                            <Banknote size={13} strokeWidth={2} aria-hidden />
+                          )}
+                          {spend.paymentMethod}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-danger font-medium text-right">
                         -{spend.amount.toFixed(2)}
                       </TableCell>
@@ -218,7 +317,13 @@ export default function Expenses() {
                           type="button"
                           className="table-action-btn"
                           onClick={() => {
-                            setLiquidCash(lc => lc + spend.amount);
+                            if (spend.paymentMethod === 'Cash') {
+                              setLiquidCash(lc => lc + spend.amount);
+                            } else {
+                              setScheduledPayments(prev =>
+                                applyCreditCardScheduleDelta(prev, -spend.amount, spend.date)
+                              );
+                            }
                             setDailySpends(prev => prev.filter(s => s.id !== spend.id));
                           }}
                           aria-label={`Delete ${spend.title}`}
@@ -231,8 +336,11 @@ export default function Expenses() {
                   ))}
                   {dailySpends.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-secondary py-4">
-                        No spendings yet.
+                      <TableCell colSpan={6} className="empty-table-cell">
+                        <div className="empty-state-inline">
+                          <Receipt size={28} strokeWidth={1.5} aria-hidden />
+                          <span>No day spendings yet. Add one to start tracking.</span>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -394,18 +502,45 @@ export default function Expenses() {
                       placeholder="0.00"
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Theme</label>
-                    <select
-                      value={newFixed.color}
-                      onChange={e => setNewFixed({ ...newFixed, color: e.target.value })}
-                      className="input-field"
+                  <div className="form-group form-group-full-width">
+                    <span className="input-label" id="fixed-theme-label">
+                      Card theme
+                    </span>
+                    <p className="text-tertiary text-xs theme-field-hint">
+                      Tap a style to set the color ring for this fixed cost on the grid.
+                    </p>
+                    <div
+                      className="fixed-theme-grid"
+                      role="group"
+                      aria-labelledby="fixed-theme-label"
                     >
-                      <option value="bg-blue">Blue theme</option>
-                      <option value="bg-purple">Purple theme</option>
-                      <option value="bg-red">Red theme</option>
-                      <option value="bg-green">Green theme</option>
-                    </select>
+                      {FIXED_COST_THEMES.map(t => (
+                        <button
+                          key={t.color}
+                          type="button"
+                          className={`fixed-theme-option ${newFixed.color === t.color ? 'is-selected' : ''}`}
+                          onClick={() => setNewFixed({ ...newFixed, color: t.color })}
+                          aria-pressed={newFixed.color === t.color}
+                          aria-label={`${t.label} theme, ${t.hint}`}
+                        >
+                          <span className={`fixed-theme-swatch ${t.color}`} aria-hidden />
+                          <span className="fixed-theme-text">
+                            <span className="fixed-theme-name">{t.label}</span>
+                            <span className="fixed-theme-hint">{t.hint}</span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="form-group form-group-full-width">
+                    <span className="input-label" id="fixed-payment-label">
+                      Payment method
+                    </span>
+                    <PaymentMethodField
+                      value={newFixed.paymentMethod}
+                      onChange={paymentMethod => setNewFixed({ ...newFixed, paymentMethod })}
+                      groupLabelId="fixed-payment-label"
+                    />
                   </div>
                   <div className="form-group">
                     <label>Icon emoji</label>
@@ -451,6 +586,16 @@ export default function Expenses() {
                     <div className="cost-details pr-4">
                       <span className="cost-title">{cost.title}</span>
                       <span className="cost-amount text-danger">-${cost.amount.toFixed(2)}</span>
+                      <span
+                        className={`payment-badge payment-badge--${cost.paymentMethod === 'Credit card' ? 'card' : 'cash'} payment-badge--compact`}
+                      >
+                        {cost.paymentMethod === 'Credit card' ? (
+                          <CreditCard size={12} strokeWidth={2} aria-hidden />
+                        ) : (
+                          <Banknote size={12} strokeWidth={2} aria-hidden />
+                        )}
+                        {cost.paymentMethod}
+                      </span>
                     </div>
                   </div>
                 ))}

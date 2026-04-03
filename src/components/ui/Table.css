@@ -3,7 +3,7 @@
   overflow-x: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
-  background: var(--bg-surface-elevated);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .custom-table {
@@ -13,13 +13,14 @@
 }
 
 .table-head {
-  padding: 1rem;
-  font-size: 0.85rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--text-tertiary);
   font-weight: 600;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .table-row {
@@ -36,8 +37,12 @@
 }
 
 .table-cell {
-  padding: 1rem;
-  font-size: 0.95rem;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
   color: var(--text-primary);
   vertical-align: middle;
+}
+
+tbody .table-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
 }
