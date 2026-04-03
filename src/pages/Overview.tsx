@@ -21,6 +21,8 @@ import {
   EyeOff,
   ArrowDownRight,
   ArrowUpRight,
+  TrendingUp,
+  CreditCard,
 } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import type { ScheduledPayment } from '../context/AppDataContext';
@@ -91,7 +93,9 @@ export default function Overview() {
     const variableIn = incomes
       .filter(i => i.type.toLowerCase() === 'variable' && i.date === t)
       .reduce((s, i) => s + i.amount, 0);
-    const daySpendOut = dailySpends.filter(d => d.date === t).reduce((s, d) => s + d.amount, 0);
+    const daySpendOut = dailySpends
+      .filter(d => d.date === t && d.paymentMethod !== 'Credit card')
+      .reduce((s, d) => s + d.amount, 0);
     return { variableIn, daySpendOut, net: variableIn - daySpendOut };
   }, [incomes, dailySpends]);
 
@@ -155,6 +159,7 @@ export default function Overview() {
       type: newSchedule.type,
       status: 'Pending',
       date: newSchedule.date,
+      source: 'manual',
     };
     setScheduledPayments(prev => [...prev, entry]);
     setNewSchedule({
@@ -207,44 +212,77 @@ export default function Overview() {
         </div>
       )}
 
-      <header className="page-header">
-        <div>
-          <h1 className="text-gradient">Financial Overview</h1>
-          <p className="text-secondary mt-1">Your net balances, scheduled flows, and projections.</p>
+      <header className="page-header overview-page-header">
+        <div className="overview-hero-copy">
+          <p className="page-eyebrow">Executive overview</p>
+          <h1 className="page-title-display">Financial Overview</h1>
+          <p className="text-secondary mt-1 overview-hero-desc">
+            Net worth, cash runway, and scheduled flows in one place—aligned with common fintech dashboard KPI
+            patterns (balance, obligations, portfolio snapshot).
+          </p>
+          <div className="overview-hero-meta" aria-label="Overview status">
+            <span className="hero-pill hero-pill--live">
+              <span className="hero-pill-dot" aria-hidden />
+              Live balances
+            </span>
+            <span className="hero-pill">
+              {new Date().toLocaleDateString(undefined, {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </span>
+          </div>
         </div>
       </header>
 
-      <div className="metrics-banner">
-        <Card className="glass-panel metric-panel">
-          <div className="metric-icon bg-indigo">
-            <Wallet size={24} />
+      <div className="kpi-grid" role="list">
+        <Card className="glass-panel kpi-card kpi-card--liquidity" role="listitem">
+          <div className="kpi-card-accent" aria-hidden />
+          <div className="kpi-icon-wrap kpi-icon-wrap--gold">
+            <Wallet size={22} strokeWidth={2} aria-hidden />
           </div>
-          <div className="metric-details">
-            <span className="text-secondary text-sm">Total liquid cash</span>
-            <span className="amount font-medium">
+          <div className="kpi-card-body">
+            <span className="kpi-label">Liquid cash</span>
+            <span className="kpi-value">
               ${liquidCash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
-            <span className="text-tertiary text-xs mt-1">
-              Variable income &amp; day spendings update cash; scheduled approvals too
+            <span className="kpi-meta">
+              Updates when you log variable income, day spendings, or approve scheduled items.
             </span>
           </div>
         </Card>
-        <Card className="glass-panel metric-panel">
-          <div className="metric-icon bg-purple">
-            <Calendar size={24} />
+
+        <Card className="glass-panel kpi-card kpi-card--pending" role="listitem">
+          <div className="kpi-card-accent" aria-hidden />
+          <div className="kpi-icon-wrap kpi-icon-wrap--rose">
+            <Calendar size={22} strokeWidth={2} aria-hidden />
           </div>
-          <div className="metric-details">
-            <span className="text-secondary text-sm">Pending expenses (near-term)</span>
-            <span className="amount font-medium text-danger">
-              -$
+          <div className="kpi-card-body">
+            <span className="kpi-label">Near-term obligations</span>
+            <span className="kpi-value kpi-value--outflow">
+              −$
               {nearPendingExpenseTotal.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
             </span>
-            <span className="text-tertiary text-xs mt-1">
-              Overdue + due within 30 days. Farther dues are listed but not summed here.
+            <span className="kpi-meta">Overdue and due within 30 days (farther dues are listed separately).</span>
+          </div>
+        </Card>
+
+        <Card className="glass-panel kpi-card kpi-card--networth" role="listitem">
+          <div className="kpi-card-accent" aria-hidden />
+          <div className="kpi-icon-wrap kpi-icon-wrap--violet">
+            <TrendingUp size={22} strokeWidth={2} aria-hidden />
+          </div>
+          <div className="kpi-card-body">
+            <span className="kpi-label">Net worth snapshot</span>
+            <span className="kpi-value">
+              ${startingNetWorth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
+            <span className="kpi-meta">Liquid cash plus portfolio value from your investments tab.</span>
           </div>
         </Card>
       </div>
@@ -254,7 +292,7 @@ export default function Overview() {
           <Card className="glass-panel today-net-card">
             <div className="today-net-inner">
               <div className="today-net-title">
-                <Calendar size={18} className="text-primary" aria-hidden />
+                <Calendar size={18} className="text-foreground" aria-hidden />
                 <span>Today&apos;s net (variable)</span>
               </div>
               <p className="text-secondary text-sm today-net-detail">
@@ -263,8 +301,12 @@ export default function Overview() {
                   +${todayCashflow.variableIn.toFixed(2)}
                 </span>
                 {' · '}
-                Day spendings:{' '}
+                Cash day spendings:{' '}
                 <span className="text-danger font-medium">-${todayCashflow.daySpendOut.toFixed(2)}</span>
+                <span className="text-tertiary text-xs block mt-1">
+                  Card spend today is not deducted here; it rolls into the next month&apos;s statement on
+                  Expenses.
+                </span>
               </p>
               <p
                 className={`today-net-total ${todayCashflow.net >= 0 ? 'text-success' : 'text-danger'}`}
@@ -431,6 +473,11 @@ export default function Overview() {
                         </div>
                         <div className="item-info">
                           <span className="font-medium schedule-item-title-row">
+                            {payment.source === 'credit_card_aggregate' && (
+                              <span className="schedule-icon-wrap" aria-hidden title="Card statement total">
+                                <CreditCard size={16} className="schedule-cc-icon" />
+                              </span>
+                            )}
                             {payment.type === 'Expense' && payment.status === 'Pending' && isFarExpense && (
                               <span className="schedule-icon-wrap" aria-label="Due more than 30 days from today">
                                 <CalendarRange size={16} className="schedule-far-icon" aria-hidden />

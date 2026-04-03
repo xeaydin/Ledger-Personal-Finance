@@ -56,7 +56,8 @@ export default function Settings() {
     <div className="page-layout">
       <header className="page-header">
         <div>
-          <h1 className="text-gradient">Settings</h1>
+          <p className="page-eyebrow">Workspace</p>
+          <h1 className="page-title-display">Settings</h1>
           <p className="text-secondary mt-1">
             Manage expense categories and your liquid cash baseline used in overview forecasts.
           </p>
@@ -67,7 +68,7 @@ export default function Settings() {
         <Card className="glass-panel">
           <CardHeader>
             <CardTitle className="settings-card-title">
-              <Tag size={20} className="text-primary" />
+              <Tag size={20} className="text-accent" />
               Expense categories
             </CardTitle>
           </CardHeader>
@@ -118,7 +119,7 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <p className="text-secondary text-sm mb-4">
-              Used as starting cash in <strong className="text-primary">Total liquid cash</strong> and in the net worth
+              Used as starting cash in <strong className="text-accent">Total liquid cash</strong> and in the net worth
               forecast (together with your investment portfolio value).
             </p>
             <form onSubmit={handleSaveLiquid} className="settings-inline-form">

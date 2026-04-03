@@ -35,10 +35,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 0.85rem;
+  padding: 0.7rem 0.95rem;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.category-row:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-glass-hover);
 }
 
 .category-name {

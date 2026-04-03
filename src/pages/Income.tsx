@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
-import { Plus, Settings, Save, Trash2, X } from 'lucide-react';
+import { Plus, Settings, Save, Trash2, X, Wallet } from 'lucide-react';
 import { useAppData } from '../context/AppDataContext';
 import './Income.css';
 
@@ -69,7 +69,8 @@ export default function Income() {
     <div className="page-layout">
       <header className="page-header">
         <div>
-          <h1 className="text-gradient">Income Tracker</h1>
+          <p className="page-eyebrow">Cash in</p>
+          <h1 className="page-title-display">Income Tracker</h1>
           <p className="text-secondary mt-1">Manage and allocate your revenue streams.</p>
         </div>
         <Button
@@ -212,19 +213,19 @@ export default function Income() {
               </form>
             ) : (
               <>
-                <div className="donut-chart-container">
-                  <div
-                    className="donut-chart"
-                    style={{
-                      background: `conic-gradient(
-                      var(--accent-success) 0deg ${allocations.expenses * 3.6}deg,
-                      var(--accent-primary) ${allocations.expenses * 3.6}deg ${(allocations.expenses + allocations.savings) * 3.6}deg,
-                      var(--accent-warning) ${(allocations.expenses + allocations.savings) * 3.6}deg 360deg
-                    )`,
-                    }}
-                  />
-                  <div className="donut-inner text-primary">
-                    {allocations.expenses} / {allocations.savings} / {allocations.investments}
+                <div
+                  className="donut-chart-container"
+                  style={
+                    {
+                      ['--donut-a1' as string]: `${allocations.expenses * 3.6}deg`,
+                      ['--donut-a2' as string]: `${(allocations.expenses + allocations.savings) * 3.6}deg`,
+                    } as CSSProperties
+                  }
+                >
+                  <div className="donut-chart-ring" aria-hidden />
+                  <div className="donut-chart" />
+                  <div className="donut-inner">
+                    <span className="donut-inner-label">Your split</span>
                   </div>
                 </div>
                 <div className="allocation-legend">
@@ -283,8 +284,11 @@ export default function Income() {
             <TableBody>
               {incomes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-secondary py-8">
-                    No income entries found.
+                  <TableCell colSpan={5} className="empty-table-cell">
+                    <div className="empty-state-inline">
+                      <Wallet size={28} strokeWidth={1.5} aria-hidden />
+                      <span>No income entries yet. Add salary, freelance, or other sources to see them here.</span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
